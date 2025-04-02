@@ -9,7 +9,7 @@ pipeline {
         scannerHome = tool 'sonar-scan-server';
         registry = "https://hub.docker.com/spring-boot"
         registryCredential = 'docker-jenkins'
-        dockerImage = '' 
+        dockerUsr = 'nithyagkm' 
       }
 
   stages {
@@ -48,8 +48,12 @@ pipeline {
     stage('Docker lOGIN and Push') {
       agent any
       steps {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-        echo "Login successful"
+        script{
+          withCredentials([usernamePassword(credentialsId: 'docker-jenkins', passwordVariable: 'docker_psw', usernameVariable: 'docker_usr')]) {
+            sh 'docker login -u ${dockerUsr} -p ${docker_psw}'
+            echo "Docker login successful"
+}
+        }
       }
     }
 
