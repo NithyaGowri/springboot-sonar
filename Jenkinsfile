@@ -52,6 +52,8 @@ pipeline {
           withCredentials([usernamePassword(credentialsId: 'docker-jenkins', passwordVariable: 'docker_psw', usernameVariable: 'docker_usr')]) {
             sh 'docker login -u ${dockerUsr} -p ${docker_psw}'
             echo "Docker login successful"
+            sh 'docker push nithyagkm/spring:$BUILD_NUMBER'
+            echo "Image pushed to Docker Hub"
 }
         }
       }
