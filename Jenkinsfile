@@ -34,8 +34,8 @@ pipeline {
       {
             DOCKER_IMAGE = 'trail-app'
             IMAGE_TAG = 'latest'
-            DOCKER_CREDENTIALS = 'Docker-hub'  // Jenkins credentials ID for Docker Hub or your registry
-            USERNAME= 'vinay969'
+            DOCKER_CREDENTIALS = 'docker-jenkins'  // Jenkins credentials ID for Docker Hub or your registry
+            USERNAME= 'nithyagkm'
       }
       steps{
         echo "Building Docker image"
@@ -43,6 +43,16 @@ pipeline {
           sh 'docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .'
         }
       }
+    }           
+    stage('Docker Push') {
+      agent any
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'docker-jenkins', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+          sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+          sh 'docker push'
+        }
+      }
     }
+
   }
 }
