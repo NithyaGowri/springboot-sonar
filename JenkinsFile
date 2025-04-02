@@ -20,7 +20,7 @@ pipeline {
       }
      steps {
               withSonarQubeEnv(credentialsId: 'sonar-key', installationName: 'sonar-scan') {
-                sh "${scannerHome}/bin/sonar-scanner"
+                sh "${SONAR_URL}/bin/sonar-scanner"
               }
             }
     }
