@@ -4,15 +4,16 @@ pipeline {
     {
         maven 'Maven3'
     }
-  stages {
-    environment
+  environment
       {
             DOCKER_IMAGE = 'trail-app'
             DOCKER_CREDENTIALS = 'docker-jenkins'  // Jenkins credentials ID for Docker Hub or your registry
             USERNAME= 'docker-hub'
             scannerHome = tool 'sonar-scan-server';
       }
-    stage('Checkout') {
+
+  stages {
+        stage('Checkout') {
       steps {
         sh 'echo passed'
         //git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
