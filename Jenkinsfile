@@ -5,6 +5,13 @@ pipeline {
         maven 'Maven3'
     }
   stages {
+    environment
+      {
+            DOCKER_IMAGE = 'trail-app'
+            DOCKER_CREDENTIALS = 'docker-jenkins'  // Jenkins credentials ID for Docker Hub or your registry
+            USERNAME= 'docker-hub'
+            scannerHome = tool 'sonar-scan-server';
+      }
     stage('Checkout') {
       steps {
         sh 'echo passed'
@@ -19,9 +26,7 @@ pipeline {
 }
     }
     stage('Static Code Analysis') {
-      environment {
-        scannerHome = tool 'sonar-scan-server';
-      }
+      
      steps {
               withSonarQubeEnv(credentialsId: 'sonar-key', installationName: 'sonar-scan') {
                 sh "${scannerHome}/bin/sonar-scanner"
@@ -30,27 +35,21 @@ pipeline {
     }
     stage('Dockerize the application')
     {
-      environment
-      {
-            DOCKER_IMAGE = 'trail-app'
-            IMAGE_TAG = 'latest'
-            DOCKER_CREDENTIALS = 'docker-jenkins'  // Jenkins credentials ID for Docker Hub or your registry
-            USERNAME= 'nithyagkm'
-      }
+      
       steps{
         echo "Building Docker image"
         script{
-          sh 'docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .'
+          sh 'docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .'
         }
       }
     }           
-    stage('Docker Push') {
+    stage('Docker lOGIN and Push') {
       agent any
       steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-jenkins', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-          sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-          sh 'docker push'
-        }
+        
+          sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+          sh 'docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}'
+        
       }
     }
 
