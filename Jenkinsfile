@@ -28,5 +28,21 @@ pipeline {
               }
             }
     }
+    stage('Dockerize the application')
+    {
+      environment
+      {
+            DOCKER_IMAGE = 'TrailApp'
+            IMAGE_TAG = 'latest'
+            DOCKER_CREDENTIALS = 'Docker-hub'  // Jenkins credentials ID for Docker Hub or your registry
+            USERNAME= 'vinay969'
+      }
+      steps{
+        echo "Building Docker image"
+        script{
+          sh 'docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .'
+        }
+      }
+    }
   }
 }
