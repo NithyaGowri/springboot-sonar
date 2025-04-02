@@ -6,10 +6,10 @@ pipeline {
     }
   environment
       {
-            DOCKER_IMAGE = 'trail-app'
-            DOCKER_CREDENTIALS = 'docker-jenkins'  // Jenkins credentials ID for Docker Hub or your registry
-            USERNAME= 'docker-hub'
-            scannerHome = tool 'sonar-scan-server';
+        scannerHome = tool 'sonar-scan-server';
+        registry = "https://hub.docker.com/spring-boot"
+        registryCredential = 'docker-jenkins'
+        dockerImage = '' 
       }
 
   stages {
@@ -40,16 +40,19 @@ pipeline {
       steps{
         echo "Building Docker image"
         script{
-          sh 'docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .'
+         
+          dockerImage = docker.build registry + ":$BUILD_NUMBER" 
         }
       }
     }           
     stage('Docker lOGIN and Push') {
       agent any
       steps {
-        
-          sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-          sh 'docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}'
+        script {
+                    docker.withRegistry( '', registryCredential ) { 
+                        dockerImage.push() 
+                    }
+                } 
         
       }
     }
