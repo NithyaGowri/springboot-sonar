@@ -20,11 +20,11 @@ pipeline {
     }
     stage('Static Code Analysis') {
       environment {
-        SONAR_URL = "http://192.168.56.1:9000"
+        scannerHome = tool 'sonar-scan-server';
       }
      steps {
               withSonarQubeEnv(credentialsId: 'sonar-key', installationName: 'sonar-scan') {
-                sh "${SONAR_URL}/bin/sonar-scanner"
+                sh "${scannerHome}/bin/sonar-scanner"
               }
             }
     }
