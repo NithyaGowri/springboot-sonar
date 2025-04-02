@@ -40,20 +40,16 @@ pipeline {
       steps{
         echo "Building Docker image"
         script{
-         
-          dockerImage = docker.build registry + ":$BUILD_NUMBER" 
+         sh 'docker build -t nithyagkm/spring:$BUILD_NUMBER .'
+         echo "Image build successfully..."
         }
       }
     }           
     stage('Docker lOGIN and Push') {
       agent any
       steps {
-        script {
-                    docker.withRegistry( '', registryCredential ) { 
-                        dockerImage.push() 
-                    }
-                } 
-        
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+        echo "Login successful"
       }
     }
 
